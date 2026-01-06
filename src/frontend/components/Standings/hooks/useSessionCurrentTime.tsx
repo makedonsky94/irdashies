@@ -10,7 +10,7 @@ export const useSessionCurrentTime = () => {
     []
   );
   // session time of day is in seconds
-  const sessionTime = useTelemetryValue('SessionTimeOfDay');
+  const sessionTime = useTelemetryValue('SessionTimeOfDay', 1000);
   
   const formattedTime = useMemo(() => {
     if (sessionTime == null) return '';

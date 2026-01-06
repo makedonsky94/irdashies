@@ -2,13 +2,13 @@ import { useSessionLaps, useTelemetryValue } from '@irdashies/context';
 import { useMemo } from 'react';
 
 export const useSessionLapCount = () => {
-  const sessionNum = useTelemetryValue('SessionNum');
+  const sessionNum = useTelemetryValue('SessionNum', 1000);
   const sessionLaps = useSessionLaps(sessionNum);
-  const sessionState = useTelemetryValue('SessionState');
-  const currentLap = useTelemetryValue('Lap');
-  const time = useTelemetryValue('SessionTime');
-  const timeTotal = useTelemetryValue('SessionTimeTotal');
-  const timeRemaining = useTelemetryValue('SessionTimeRemain');
+  const sessionState = useTelemetryValue('SessionState', 1000);
+  const currentLap = useTelemetryValue('Lap', 1000);
+  const time = useTelemetryValue('SessionTime', 1000);
+  const timeTotal = useTelemetryValue('SessionTimeTotal', 1000);
+  const timeRemaining = useTelemetryValue('SessionTimeRemain', 1000);
 
   const result = useMemo(() => {
     const result = {

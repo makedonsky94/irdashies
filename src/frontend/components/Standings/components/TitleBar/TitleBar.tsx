@@ -16,11 +16,11 @@ export const TitleBar = ({ titleBarSettings }: TitleBarProps) => {
   const displayText = seriesId ? (seriesMapping[seriesId.toString()] || sessionName) : (sessionName || 'Unknown Session');
 
   // Get telemetry data for progress calculation
-  const sessionTimeRemain = useTelemetryValue('SessionTimeRemain');
-  const sessionTimeTotal = useTelemetryValue('SessionTimeTotal');
-  const sessionLapsTotal = useTelemetryValue('SessionLapsTotal');
-  const raceLaps = useTelemetryValue('RaceLaps');
-  const lapDistPct = useTelemetryValue('LapDistPct');
+  const sessionTimeRemain = useTelemetryValue('SessionTimeRemain', 1000);
+  const sessionTimeTotal = useTelemetryValue('SessionTimeTotal', 1000);
+  const sessionLapsTotal = useTelemetryValue('SessionLapsTotal', 1000);
+  const raceLaps = useTelemetryValue('RaceLaps', 1000);
+  const lapDistPct = useTelemetryValue('LapDistPct', 1000);
 
   // Get highlight color from dashboard
   const { currentDashboard } = useDashboard();
