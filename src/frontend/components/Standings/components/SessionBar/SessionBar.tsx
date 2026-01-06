@@ -79,7 +79,7 @@ export const SessionBar = ({ position = 'header', variant = 'standings' }: Sessi
 
         // For lap-limited sessions, show total laps completed
         if (currentLap > 0) {
-          return <div className="flex justify-center">L{currentLap}</div>;
+          return <div className="flex justify-center">L{currentLap}/{sessionLaps}</div>;
         }
 
         return null;
