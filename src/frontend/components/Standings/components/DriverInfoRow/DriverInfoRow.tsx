@@ -15,7 +15,7 @@ import { CountryFlagsCell } from './cells/CountryFlagsCell';
 import { DeltaCell } from './cells/DeltaCell';
 import { DriverNameCell } from './cells/DriverNameCell';
 import { FastestTimeCell } from './cells/FastestTimeCell';
-import { IratingChangeCell } from './cells/IratingChangeCell';
+import { PositionChangeCell } from './cells/PositionChangeCell';
 import { LapTimeDeltasCell } from './cells/LapTimeDeltasCell';
 import { LastTimeCell } from './cells/LastTimeCell';
 import { CarStatusCell } from './cells/CarStatusCell';
@@ -35,6 +35,7 @@ interface DriverRowInfoProps {
   license?: string;
   rating?: number;
   iratingChangeValue?: number;
+  positionChangeValue?: number;
   lastTime?: number;
   fastestTime?: number;
   lastTimeState?: LastTimeState;
@@ -82,6 +83,7 @@ export const DriverInfoRow = memo(
     license,
     rating,
     iratingChangeValue,
+    positionChangeValue,
     lastTime,
     fastestTime,
     lastTimeState,
@@ -246,20 +248,22 @@ export const DriverInfoRow = memo(
               hidden={hidden}
               license={license}
               rating={rating}
+              ratingChange={iratingChangeValue}
+              ratingChangeEnabled={config?.iratingChange?.enabled}
               badgeFormat={config?.badge?.badgeFormat}
             />
           ),
         },
         {
-          id: 'iratingChange',
+          id: 'positionChange',
           shouldRender:
-            (displayOrder ? displayOrder.includes('iratingChange') : true) &&
+            (displayOrder ? displayOrder.includes('positionChange') : true) &&
             (config?.iratingChange?.enabled ?? false),
           component: (
-            <IratingChangeCell
-              key="iratingChange"
+            <PositionChangeCell
+              key="positionChange"
               hidden={hidden}
-              iratingChangeValue={iratingChangeValue}
+              positionChangeValue={positionChangeValue}
             />
           ),
         },

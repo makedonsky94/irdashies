@@ -1,14 +1,18 @@
-
+import { RatingChange } from '../RatingChange/RatingChange';
 
 export interface DriverRatingBadgeProps {
   license?: string;
   rating?: number;
+  ratingChange?: number;
+  ratingChangeEnabled?: boolean;
   format?: 'license-color-rating-bw' | 'license-color-rating-bw-no-license' | 'rating-color-no-license' | 'license-bw-rating-bw' | 'rating-only-bw-rating-bw' | 'license-bw-rating-bw-no-license' | 'rating-bw-no-license' | 'rating-only-color-rating-bw';
 }
 
 export const DriverRatingBadge = ({
   license = 'R 0.0',
   rating = 0,
+  ratingChange = 0,
+  ratingChangeEnabled = false,
   format = 'license-color-rating-bw',
 }: DriverRatingBadgeProps) => {
   const licenseLevel = license?.charAt(0) || 'R';
@@ -44,8 +48,9 @@ export const DriverRatingBadge = ({
           >
             {formattedLicense} {safetyRating}
           </div>
-          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
+          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight flex items-center gap-1">
             {simplifiedRating}k
+            {ratingChangeEnabled && <RatingChange value={ratingChange} />}
           </div>
         </div>
       );
@@ -59,8 +64,9 @@ export const DriverRatingBadge = ({
           >
             {safetyRating}
           </div>
-          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
+          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight flex items-center gap-1">
             {simplifiedRating}k
+            {ratingChangeEnabled && <RatingChange value={ratingChange} />}
           </div>
         </div>
       );
@@ -74,8 +80,9 @@ export const DriverRatingBadge = ({
           >
             {formattedLicense}
           </div>
-          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
+          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight flex items-center gap-1">
             {simplifiedRating}k
+            {ratingChangeEnabled && <RatingChange value={ratingChange} />}
           </div>
         </div>
       );
@@ -83,8 +90,9 @@ export const DriverRatingBadge = ({
     case 'rating-color-no-license':
       // Rating only in colored badge, no license
       return (
-        <div className={`text-white text-nowrap border-2 px-1 rounded-md text-xs leading-tight ${color}`}>
+        <div className={`text-white text-nowrap border-2 px-1 rounded-md text-xs leading-tight flex items-center gap-1 ${color}`}>
           {simplifiedRating}k
+          {ratingChangeEnabled && <RatingChange value={ratingChange} />}
         </div>
       );
 
@@ -95,8 +103,9 @@ export const DriverRatingBadge = ({
           <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
             {formattedLicense} {safetyRating}
           </div>
-          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
+          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight flex items-center gap-1">
             {simplifiedRating}k
+            {ratingChangeEnabled && <RatingChange value={ratingChange} />}
           </div>
         </div>
       );
@@ -110,8 +119,9 @@ export const DriverRatingBadge = ({
           >
             {safetyRating}
           </div>
-          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
+          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight flex items-center gap-1">
             {simplifiedRating}k
+            {ratingChangeEnabled && <RatingChange value={ratingChange} />}
           </div>
         </div>
       );
@@ -123,8 +133,9 @@ export const DriverRatingBadge = ({
           <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
             {formattedLicense}
           </div>
-          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
+          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight flex items-center gap-1">
             {simplifiedRating}k
+            {ratingChangeEnabled && <RatingChange value={ratingChange} />}
           </div>
         </div>
       );
@@ -132,8 +143,9 @@ export const DriverRatingBadge = ({
     case 'rating-bw-no-license':
       // Rating only in B&W
       return (
-        <div className="text-white text-nowrap border-2 px-1 rounded-md text-xs leading-tight bg-white/10 border-transparent">
+        <div className="text-white text-nowrap border-2 px-1 rounded-md text-xs leading-tight bg-white/10 border-transparent flex items-center gap-1">
           {simplifiedRating}k
+          {ratingChangeEnabled && <RatingChange value={ratingChange} />}
         </div>
       );
 
@@ -146,8 +158,9 @@ export const DriverRatingBadge = ({
           >
             {formattedLicense} {safetyRating}
           </div>
-          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight">
+          <div className="bg-white/10 text-white border-2 border-transparent px-1 rounded-md text-xs leading-tight flex items-center gap-1">
             {simplifiedRating}k
+            {ratingChangeEnabled && <RatingChange value={ratingChange} />}
           </div>
         </div>
       );

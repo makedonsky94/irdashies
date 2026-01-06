@@ -46,6 +46,7 @@ export const FormatLicenseColorRatingBw: Story = {
   args: {
     license: 'A 4.99',
     rating: 4999,
+    ratingChange: 100,
     format: 'license-color-rating-bw',
   },
 };
@@ -54,6 +55,7 @@ export const FormatLicenseColorRatingBwNoLicense: Story = {
   args: {
     license: 'A 4.99',
     rating: 4999,
+    ratingChange: 100,
     format: 'license-color-rating-bw-no-license',
   },
 };
@@ -62,6 +64,7 @@ export const FormatRatingColorNoLicense: Story = {
   args: {
     license: 'A 4.99',
     rating: 4999,
+    ratingChange: 100,
     format: 'rating-color-no-license',
   },
 };
@@ -70,6 +73,7 @@ export const FormatLicenseBwRatingBw: Story = {
   args: {
     license: 'A 4.99',
     rating: 4999,
+    ratingChange: 100,
     format: 'license-bw-rating-bw',
   },
 };
@@ -78,6 +82,7 @@ export const FormatRatingOnlyBwRatingBw: Story = {
   args: {
     license: 'A 4.99',
     rating: 4999,
+    ratingChange: 100,
     format: 'rating-only-bw-rating-bw',
   },
 };
@@ -86,6 +91,7 @@ export const FormatLicenseBwRatingBwNoLicense: Story = {
   args: {
     license: 'A 4.99',
     rating: 4999,
+    ratingChange: 100,
     format: 'license-bw-rating-bw-no-license',
   },
 };
@@ -94,6 +100,7 @@ export const FormatRatingBwNoLicense: Story = {
   args: {
     license: 'A 4.99',
     rating: 4999,
+    ratingChange: 100,
     format: 'rating-bw-no-license',
   },
 };
@@ -102,6 +109,7 @@ export const FormatRatingOnlyColorRatingBw: Story = {
   args: {
     license: 'A 4.99',
     rating: 4999,
+    ratingChange: 100,
     format: 'rating-only-color-rating-bw',
   },
 };
