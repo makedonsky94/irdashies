@@ -10,6 +10,7 @@ export type LastTimeState = 'session-fastest' | 'personal-best' | undefined;
 export interface Standings {
   carIdx: number;
   position?: number;
+  positionChange?: number;
   classPosition?: number;
   lap?: number;
   lappedState?: 'ahead' | 'behind' | 'same';
@@ -135,10 +136,16 @@ export const createDriverStandings = (
       );
 
       if (!driver) return null;
+  
+      const qualyResultForDriver = session.qualifyingResults?.find(q => q.CarIdx === driver.CarIdx);
+      const positionAtStart = qualyResultForDriver?.Position;
+      const positionChange = positionAtStart && result.Position ? positionAtStart - result.Position : 0;
+
       return {
         carIdx: result.CarIdx,
         position: result.Position,
         classPosition: result.ClassPosition + 1,
+        positionChange: positionChange,
         delta: calculateDelta(
           result.CarIdx,
           result.FastestTime,

@@ -4,12 +4,11 @@ import {
   useTelemetryValues,
   useFocusCarIdx,
 } from '@irdashies/context';
-import { useDriverStandings } from './useDriverPositions';
-import type { Standings } from '../createStandings';
+import { useDriverStandings } from './useDriverStandings';
 
 export const useDriverRelatives = ({ buffer }: { buffer: number }) => {
   const driversGrouped = useDriverStandings();
-  const drivers = driversGrouped as Standings[];
+  const drivers = driversGrouped.flatMap((group) => group[1]);
   const carIdxLapDistPct = useTelemetryValues('CarIdxLapDistPct');
   // CarIdxEstTime - iRacing's native estimated time gap calculation
   const carIdxEstTime = useTelemetryValues('CarIdxEstTime');

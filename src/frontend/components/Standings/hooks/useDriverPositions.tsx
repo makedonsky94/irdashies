@@ -39,21 +39,22 @@ export const useDriverPositions = () => {
   const lastPitLap = usePitLap()
   const lastLap = useCarLap()
 
-
   const positions = useMemo(() => {
-    return carIdxPosition?.value?.map((position, carIdx) => ({
-      carIdx,
-      position,
-      classPosition: carIdxClassPosition?.value?.[carIdx],
-      delta: carIdxF2Time?.value?.[carIdx], // only to leader currently, need to handle non-race sessions
-      bestLap: carIdxBestLap?.value?.[carIdx],
-      lastLap: lastLap[carIdx] ?? -1,
-      lastLapTime: carIdxLastLapTime?.value?.[carIdx] ?? -1,
-      lapNum: carIdxLapNum?.value?.[carIdx],
-      lastPitLap: lastPitLap[carIdx] ?? undefined,
-      prevCarTrackSurface: prevCarTrackSurface[carIdx] ?? undefined,
-      carTrackSurface: carIdxTrackSurface?.value?.[carIdx]
-    })) ?? [];
+    return carIdxPosition?.value?.map((position, carIdx) => {
+      return {
+        carIdx,
+        position,
+        classPosition: carIdxClassPosition?.value?.[carIdx],
+        delta: carIdxF2Time?.value?.[carIdx], // only to leader currently, need to handle non-race sessions
+        bestLap: carIdxBestLap?.value?.[carIdx],
+        lastLap: lastLap[carIdx] ?? -1,
+        lastLapTime: carIdxLastLapTime?.value?.[carIdx] ?? -1,
+        lapNum: carIdxLapNum?.value?.[carIdx],
+        lastPitLap: lastPitLap[carIdx] ?? undefined,
+        prevCarTrackSurface: prevCarTrackSurface[carIdx] ?? undefined,
+        carTrackSurface: carIdxTrackSurface?.value?.[carIdx]
+      }
+    }) ?? [];
   }, [
     carIdxPosition?.value,
     carIdxClassPosition?.value,
@@ -113,7 +114,7 @@ export const useCarState = () => {
   }, [carIdxTrackSurface?.value, carIdxOnPitRoad?.value, carIdxTireCompound?.value, carIdxSessionFlags?.value]);
 };
 
-// TODO: this should eventually replace the useDriverStandings hook
+// TODO: merge this and useDriverStandings in file useDriverStandings.tsx
 // currently there's still a few bugs to handle but is only used in relative right now
 export const useDriverStandings = () => {
   const driverPositions = useDriverPositions();

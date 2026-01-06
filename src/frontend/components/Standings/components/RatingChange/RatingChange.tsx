@@ -12,7 +12,7 @@ export const RatingChange = ({ value }: RatingChangeProps) => {
   }
 
   const roundedChange = Math.round(value);
-  let text: string;
+  let text: string | undefined;
   let color = 'text-gray-400';
   let icon: React.ReactNode;
 
@@ -25,7 +25,6 @@ export const RatingChange = ({ value }: RatingChangeProps) => {
     color = 'text-red-400';
     icon = <CaretDownIcon size={10} />;
   } else {
-    text = `${roundedChange}`;
     icon = <MinusIcon size={10} />;
   }
 

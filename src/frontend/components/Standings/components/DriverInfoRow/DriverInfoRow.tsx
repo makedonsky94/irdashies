@@ -256,9 +256,7 @@ export const DriverInfoRow = memo(
         },
         {
           id: 'positionChange',
-          shouldRender:
-            (displayOrder ? displayOrder.includes('positionChange') : true) &&
-            (config?.iratingChange?.enabled ?? false),
+          shouldRender: (displayOrder ? displayOrder.includes('positionChange') : false),
           component: (
             <PositionChangeCell
               key="positionChange"

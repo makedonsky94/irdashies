@@ -145,7 +145,7 @@ export const defaultDashboard: DashboardLayout = {
           "displayOrder": ["sessionName", "sessionTime", "incidentCount", "brakeBias", "localTime", "sessionClockTime", "trackWetness", "airTemperature", "trackTemperature"]
         },
         "showOnlyWhenOnTrack": false,
-        "displayOrder": ["position", "carNumber", "countryFlags", "driverName", "pitStatus", "carManufacturer", "badge", "iratingChange", "gap", "interval", "fastestTime", "lastTime", "compound", "lapTimeDeltas"]
+        "displayOrder": ["position", "carNumber", "countryFlags", "driverName", "pitStatus", "carManufacturer", "badge", "positionChange", "gap", "interval", "fastestTime", "lastTime", "compound", "lapTimeDeltas"]
       }
     },
     {

@@ -4,11 +4,11 @@ import { CaretUpIcon, CaretDownIcon, MinusIcon } from '@phosphor-icons/react';
 interface PositionChangeCellProps {
   hidden?: boolean;
   positionChangeValue?: number;
+  positionChangeEnabled?: boolean;
 }
 
 export const PositionChangeCell = memo(
   ({ hidden, positionChangeValue }: PositionChangeCellProps) => {
-
     let text: string | undefined;
     let color = 'text-gray-400';
     let icon: React.ReactNode;
@@ -25,7 +25,6 @@ export const PositionChangeCell = memo(
         color = 'text-red-400';
         icon = <CaretDownIcon size={10} />;
       } else {
-        text = `${positionChangeValue}`;
         icon = <MinusIcon size={10} />;
       }
     }
@@ -33,13 +32,13 @@ export const PositionChangeCell = memo(
     return (
       <td
         data-column="positionChange"
-        className="w-auto px-2 text-center whitespace-nowrap align-middle"
+        className={`w-auto px-2 text-center whitespace-nowrap align-middle`}
       >
         {!hidden && (
-          <>
+          <span className={`flex items-center justify-center gap-0.5 ${color}`}>
             {icon}
             {text}
-          </>
+          </span>
         )}
       </td>
     )
