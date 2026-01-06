@@ -5,7 +5,7 @@
   "description": "iRacing Dashboards & Overlays",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tariknz/irdashies"
+    "url": "https://github.com/makedonsky94/irdashies"
   },
   "main": ".vite/build/main.js",
   "scripts": {
