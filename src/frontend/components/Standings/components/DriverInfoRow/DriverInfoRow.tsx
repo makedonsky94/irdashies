@@ -18,7 +18,7 @@ import { FastestTimeCell } from './cells/FastestTimeCell';
 import { IratingChangeCell } from './cells/IratingChangeCell';
 import { LapTimeDeltasCell } from './cells/LapTimeDeltasCell';
 import { LastTimeCell } from './cells/LastTimeCell';
-import { PitStatusCell } from './cells/PitStatusCell';
+import { CarStatusCell } from './cells/CarStatusCell';
 import { PositionCell } from './cells/PositionCell';
 
 interface DriverRowInfoProps {
@@ -203,7 +203,7 @@ export const DriverInfoRow = memo(
             (displayOrder ? displayOrder.includes('pitStatus') : true) &&
             (config?.pitStatus?.enabled ?? true),
           component: (
-            <PitStatusCell
+            <CarStatusCell
               key="pitStatus"
               hidden={hidden}
               onPitRoad={onPitRoad}

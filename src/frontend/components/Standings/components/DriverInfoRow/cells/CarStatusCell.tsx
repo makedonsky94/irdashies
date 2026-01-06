@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-interface PitStatusCellProps {
+interface CarStatusCellProps {
   hidden?: boolean;
   onPitRoad?: boolean;
   carTrackSurface?: number;
@@ -34,7 +34,7 @@ const StatusBadge = ({ textColor = 'text-white', borderColorClass, animate, chil
   );
 };
 
-export const PitStatusCell = memo(
+export const CarStatusCell = memo(
   ({
     hidden,
     onPitRoad,
@@ -49,7 +49,7 @@ export const PitStatusCell = memo(
     slowdown,
     pitStopDuration,
     showPitTime = false
-  }: PitStatusCellProps) => {
+  }: CarStatusCellProps) => {
     const tow =
       carTrackSurface == 1 &&
       prevCarTrackSurface != undefined &&
@@ -86,12 +86,12 @@ export const PitStatusCell = memo(
         <div className="flex flex-row-reverse items-center gap-0.5">
         {penalty && (
           <StatusBadge textColor="text-orange-500" borderColorClass="border-gray-500" additionalClasses="bg-black/80 inline-block min-w-6">
-            {'\u00A0'}
+            BF
           </StatusBadge>
         )}
         {slowdown && (
           <StatusBadge textColor="text-orange-500" borderColorClass="border-gray-500" animate additionalClasses="bg-black/80 inline-block min-w-6">
-            {'\u00A0'}
+            SD
           </StatusBadge>
         )}
         {repair && (
@@ -130,4 +130,4 @@ export const PitStatusCell = memo(
   }
 );
 
-PitStatusCell.displayName = 'PitStatusCell';
+CarStatusCell.displayName = 'CarStatusCell';

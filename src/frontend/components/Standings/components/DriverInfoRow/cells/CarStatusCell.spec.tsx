@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { PitStatusCell } from './PitStatusCell';
+import { CarStatusCell } from './CarStatusCell';
 
 const renderInTable = (component: React.ReactElement) => {
   return render(
@@ -13,10 +13,10 @@ const renderInTable = (component: React.ReactElement) => {
   );
 };
 
-describe('PitStatusCell', () => {
+describe('CarStatusCell', () => {
   it('renders empty cell when no conditions are met - must have explicit empty string to prevent "00"', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         onPitRoad={false}
         carTrackSurface={1}
         prevCarTrackSurface={1}
@@ -40,7 +40,7 @@ describe('PitStatusCell', () => {
 
   it('renders empty cell when hidden', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         hidden={true}
         onPitRoad={true}
         carTrackSurface={2}
@@ -60,7 +60,7 @@ describe('PitStatusCell', () => {
 
   it('renders DNF when car goes off track in race', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         carTrackSurface={-1}
         prevCarTrackSurface={1}
         currentSessionType="Race"
@@ -77,7 +77,7 @@ describe('PitStatusCell', () => {
 
   it('renders TOW when car is being towed', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         carTrackSurface={1}
         prevCarTrackSurface={1}
         lastLap={5}
@@ -95,7 +95,7 @@ describe('PitStatusCell', () => {
 
   it('renders OUT when car exits pits', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         onPitRoad={false}
         lastPitLap={3}
         lastLap={3}
@@ -113,7 +113,7 @@ describe('PitStatusCell', () => {
 
   it('renders PIT when car is on pit road', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         onPitRoad={true}
         carTrackSurface={2}
         currentSessionType="Race"
@@ -130,7 +130,7 @@ describe('PitStatusCell', () => {
 
   it('renders last pit lap when car pitted earlier', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         onPitRoad={false}
         lastPitLap={2}
         lastLap={5}
@@ -148,7 +148,7 @@ describe('PitStatusCell', () => {
 
   it('does not render "00" when all props are undefined', () => {
     const { container } = renderInTable(
-      <PitStatusCell />
+      <CarStatusCell />
     );
     
     const td = container.querySelector('td[data-column="pitStatus"]');
@@ -162,7 +162,7 @@ describe('PitStatusCell', () => {
 
   it('does not render "00" when onPitRoad is false and no other conditions match', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         onPitRoad={false}
         carTrackSurface={1}
         prevCarTrackSurface={1}
@@ -183,7 +183,7 @@ describe('PitStatusCell', () => {
 
   it('does not render "00" when lastLap is 0', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         onPitRoad={false}
         carTrackSurface={1}
         prevCarTrackSurface={1}
@@ -205,7 +205,7 @@ describe('PitStatusCell', () => {
 
   it('does not render "00" when lastPitLap is 0', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         onPitRoad={false}
         carTrackSurface={1}
         prevCarTrackSurface={1}
@@ -227,7 +227,7 @@ describe('PitStatusCell', () => {
 
   it('does not render "00" when penalty is true and lastLap/lastPitLap are 0', () => {
     const { container } = renderInTable(
-      <PitStatusCell
+      <CarStatusCell
         onPitRoad={false}
         carTrackSurface={1}
         prevCarTrackSurface={1}
