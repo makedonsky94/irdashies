@@ -7,6 +7,7 @@ import { TitleBar } from './components/TitleBar/TitleBar';
 import {
   useCarClassStats,
   useDriverStandings,
+  useSlicedDriverStandings,
   useStandingsSettings,
   useHighlightColor,
 } from './hooks';
@@ -25,7 +26,7 @@ export const Standings = () => {
   // Update pit laps
   usePitLapStoreUpdater();
 
-  const standings = useDriverStandings(settings);
+  const standings = useSlicedDriverStandings(settings);
   const classStats = useCarClassStats();
   const numCarClasses = useWeekendInfoNumCarClasses();
   const isMultiClass = (numCarClasses ?? 0) > 1;

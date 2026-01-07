@@ -20,13 +20,54 @@ import {
   createDriverStandings,
   groupStandingsByClass,
   sliceRelevantDrivers,
+  createDriverStandingsFromDrivers,
   augmentStandingsWithIRating,
   augmentStandingsWithGap,
   augmentStandingsWithInterval,
+  Standings,
 } from '../createStandings';
 import type { StandingsWidgetSettings } from '../../Settings/types';
 import { useDriverLivePositions } from './useDriverLivePositions';
 import { useStandingsSettings } from './useStandingsSettings';
+
+export const useSlicedDriverStandings = (
+  settings?: StandingsWidgetSettings['config']
+) => {
+    const {
+    driverStandings: {
+      buffer,
+      numNonClassDrivers,
+      minPlayerClassDrivers,
+      numTopDrivers,
+    } = {},
+    gap: { enabled: gapEnabled } = { enabled: false },
+    interval: { enabled: intervalEnabled } = { enabled: false },
+    lapTimeDeltas: { enabled: lapTimeDeltasEnabled, numLaps: numLapDeltas } = { enabled: false, numLaps: 3 },
+  } = settings ?? {};
+  const driverStandings = useDriverStandings();
+
+  const sortedStandings = driverStandings.standings.map(([classId, classStandings]) => [
+    classId,
+    classStandings.slice().sort((a, b) => (a.classPosition ?? 999) - (b.classPosition ?? 999)),
+  ]) as [string, Standings[]][];
+  
+  // Calculate gap to class leader when enabled OR when interval is enabled (interval needs gap data)
+  const gapAugmentedGroupedByClass = gapEnabled || intervalEnabled
+    ? augmentStandingsWithGap(sortedStandings)
+    : sortedStandings;
+
+  // Calculate interval to player when enabled
+  const intervalAugmentedGroupedByClass = intervalEnabled
+    ? augmentStandingsWithInterval(gapAugmentedGroupedByClass)
+    : gapAugmentedGroupedByClass;
+
+  return sliceRelevantDrivers(intervalAugmentedGroupedByClass, driverStandings.driver?.CarClassID, {
+    buffer,
+    numNonClassDrivers,
+    minPlayerClassDrivers,
+    numTopDrivers,
+  });
+}
 
 export const useDriverStandings = (settings?: StandingsWidgetSettings['config']) => {
   const {
@@ -62,10 +103,8 @@ export const useDriverStandings = (settings?: StandingsWidgetSettings['config'])
   const lastPitLap = usePitLap();
   const lastLap = useCarLap();
   const prevCarTrackSurface = usePrevCarTrackSurface();
-  const driverClass = useMemo(() => {
-    return sessionDrivers?.find(
-      (driver) => driver.CarIdx === driverCarIdx
-    )?.CarClassID;
+  const driver = useMemo(() => {
+    return sessionDrivers?.find((driver) => driver.CarIdx === driverCarIdx);
   }, [sessionDrivers, driverCarIdx]);
   const lapDeltasVsPlayer = useLapDeltasVsPlayer();
 
@@ -75,7 +114,7 @@ export const useDriverStandings = (settings?: StandingsWidgetSettings['config'])
   const lapDeltasForCalc = lapTimeDeltasEnabled ? lapDeltasVsPlayer : undefined;
 
   const standingsWithGain = useMemo(() => {
-    const initialStandings = createDriverStandings(
+    const initialStandings = createDriverStandingsFromDrivers(
       {
         playerIdx: driverCarIdx,
         drivers: sessionDrivers,
@@ -113,12 +152,12 @@ export const useDriverStandings = (settings?: StandingsWidgetSettings['config'])
 
     // Group and *sort drivers inside each class by classPosition* (this respects live positions)
     let groupedByClass = groupStandingsByClass(initialStandings);
-    if (useLivePositionStandings) {
-      groupedByClass = groupedByClass.map(([classId, classStandings]) => [
-        classId,
-        classStandings.slice().sort((a, b) => (a.classPosition ?? 999) - (b.classPosition ?? 999)),
-      ]) as [string, typeof initialStandings][];
-    }
+    // if (useLivePositionStandings) {
+    //   groupedByClass = groupedByClass.map(([classId, classStandings]) => [
+    //     classId,
+    //     classStandings.slice().sort((a, b) => (a.classPosition ?? 999) - (b.classPosition ?? 999)),
+    //   ]) as [string, typeof initialStandings][];
+    // }
 
     // Calculate iRating changes for race sessions
     const iratingAugmentedGroupedByClass =
@@ -126,22 +165,8 @@ export const useDriverStandings = (settings?: StandingsWidgetSettings['config'])
         ? augmentStandingsWithIRating(groupedByClass)
         : groupedByClass;
 
-    // Calculate gap to class leader when enabled OR when interval is enabled (interval needs gap data)
-    const gapAugmentedGroupedByClass = gapEnabled || intervalEnabled
-      ? augmentStandingsWithGap(iratingAugmentedGroupedByClass)
-      : iratingAugmentedGroupedByClass;
 
-    // Calculate interval to player when enabled
-    const intervalAugmentedGroupedByClass = intervalEnabled
-      ? augmentStandingsWithInterval(gapAugmentedGroupedByClass)
-      : gapAugmentedGroupedByClass;
-
-    return sliceRelevantDrivers(intervalAugmentedGroupedByClass, driverClass, {
-      buffer,
-      numNonClassDrivers,
-      minPlayerClassDrivers,
-      numTopDrivers,
-    });
+    return {standings: iratingAugmentedGroupedByClass, driver: driver};
   }, [
     driverCarIdx,
     sessionDrivers,
@@ -159,7 +184,7 @@ export const useDriverStandings = (settings?: StandingsWidgetSettings['config'])
     minPlayerClassDrivers,
     numTopDrivers,
     carIdxTireCompound?.value,
-    driverClass,
+    driver,
     lapTimeDeltasEnabled,
     numLapDeltas,
     lapDeltasForCalc,

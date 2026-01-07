@@ -126,16 +126,17 @@ export const createDriverStandings = (
   const resultsPositions = Array.isArray(currentSession.resultsPositions) ? currentSession.resultsPositions : [];
   const qualifyingResults = Array.isArray(session.qualifyingResults) ? session.qualifyingResults : [];
   const results = resultsPositions.length > 0 ? resultsPositions : qualifyingResults;
+  const driversByCarIdx = new Map(session.drivers?.map(driver => [driver.CarIdx, driver]) ?? []);
   const fastestDriverIdx = currentSession.resultsFastestLap?.[0]?.CarIdx;
   const fastestDriver = results?.find((r) => r.CarIdx === fastestDriverIdx);
-
+ //TODO: map drivers, not results
   return results
     .map((result) => {
-      const driver = session.drivers?.find(
-        (driver) => driver.CarIdx === result.CarIdx
-      );
+      const driver = driversByCarIdx.get(result.CarIdx);
 
-      if (!driver) return null;
+      if (!driver) {
+        return null;
+      }
   
       const qualyResultForDriver = session.qualifyingResults?.find(q => q.CarIdx === driver.CarIdx);
       const positionAtStart = qualyResultForDriver?.Position;
@@ -200,6 +201,160 @@ export const createDriverStandings = (
       };
     })
     .filter((s) => !!s);
+};
+
+/**
+ * This method will create the driver standings for the current session
+ * mapping over all drivers instead of results (returns all drivers even without lap data)
+ */
+export const createDriverStandingsFromDrivers = (
+  session: {
+    playerIdx?: number;
+    drivers?: Driver[];
+    qualifyingResults?: SessionResults[];
+  },
+  telemetry: {
+    carIdxF2TimeValue?: number[];
+    carIdxOnPitRoadValue?: boolean[];
+    carIdxTrackSurfaceValue?: number[];
+    radioTransmitCarIdx?: number[];
+    carIdxTireCompoundValue?: number[];
+    isOnTrack?: boolean;
+    carIdxSessionFlags?: number[];
+  },
+  currentSession: {
+    resultsPositions?: SessionResults[];
+    resultsFastestLap?: {
+      CarIdx: number;
+      FastestLap: number;
+      FastestTime: number;
+    }[];
+    sessionType?: string;
+  },
+  lastPitLap: number[],
+  lastLap: number[],
+  prevCarTrackSurface: number[],
+  numLapsToShow?: number,
+  lapDeltasVsPlayer?: number[][], // NEW: Pre-calculated deltas from LapTimesStore
+): Standings[] => {
+  const resultsPositions = Array.isArray(currentSession.resultsPositions) ? currentSession.resultsPositions : [];
+  const qualifyingResults = Array.isArray(session.qualifyingResults) ? session.qualifyingResults : [];
+  const results = resultsPositions.length > 0 ? resultsPositions : qualifyingResults;
+  const resultsByCarIdx = new Map(results.map(result => [result.CarIdx, result]) ?? []);
+  const fastestDriverIdx = currentSession.resultsFastestLap?.[0]?.CarIdx;
+  const fastestDriver = results?.find((r) => r.CarIdx === fastestDriverIdx);
+  
+  return (session.drivers ?? [])
+    .map((driver) => {
+      const result = resultsByCarIdx.get(driver.CarIdx);
+      
+      if (!result) {
+        // Driver exists but has no result data yet
+        return {
+          carIdx: driver.CarIdx,
+          position: undefined,
+          classPosition: undefined,
+          positionChange: undefined,
+          delta: undefined,
+          isPlayer: driver.CarIdx === session.playerIdx,
+          driver: {
+            name: driver.UserName,
+            carNum: driver.CarNumber,
+            license: driver.LicString,
+            rating: driver.IRating,
+            flairId: driver.FlairID,
+          },
+          fastestTime: 0,
+          hasFastestTime: false,
+          lastTime: 0,
+          lastTimeState: undefined,
+          onPitRoad: telemetry?.carIdxOnPitRoadValue?.[driver.CarIdx] ?? false,
+          onTrack: (telemetry?.carIdxTrackSurfaceValue?.[driver.CarIdx] ?? -1) > -1,
+          tireCompound: telemetry?.carIdxTireCompoundValue?.[driver.CarIdx] ?? 0,
+          carClass: {
+            id: driver.CarClassID,
+            color: driver.CarClassColor,
+            name: driver.CarClassShortName,
+            relativeSpeed: driver.CarClassRelSpeed,
+            estLapTime: driver.CarClassEstLapTime,
+          },
+          radioActive: telemetry.radioTransmitCarIdx?.includes(driver.CarIdx),
+          carId: driver.CarID,
+          lapTimeDeltas: undefined,
+          lastPitLap: lastPitLap[driver.CarIdx] ?? undefined,
+          lastLap: lastLap[driver.CarIdx] ?? undefined,
+          prevCarTrackSurface: prevCarTrackSurface[driver.CarIdx] ?? undefined,
+          carTrackSurface: telemetry?.carIdxTrackSurfaceValue?.[driver.CarIdx] ?? undefined,
+          currentSessionType: currentSession.sessionType,
+          dnf: !!((telemetry?.carIdxSessionFlags?.[driver.CarIdx] ?? 0) & GlobalFlags.Disqualify),
+          repair: !!((telemetry?.carIdxSessionFlags?.[driver.CarIdx] ?? 0) & GlobalFlags.Repair),
+          penalty: !!((telemetry?.carIdxSessionFlags?.[driver.CarIdx] ?? 0) & GlobalFlags.Black),
+          slowdown: !!((telemetry?.carIdxSessionFlags?.[driver.CarIdx] ?? 0) & GlobalFlags.Furled),
+        };
+      }
+  
+      const qualyResultForDriver = session.qualifyingResults?.find(q => q.CarIdx === driver.CarIdx);
+      const positionAtStart = qualyResultForDriver?.Position;
+      const positionChange = positionAtStart && result.Position ? positionAtStart - result.Position : 0;
+
+      return {
+        carIdx: result.CarIdx,
+        position: result.Position,
+        classPosition: result.ClassPosition + 1,
+        positionChange: positionChange,
+        delta: calculateDelta(
+          result.CarIdx,
+          result.FastestTime,
+          telemetry.carIdxF2TimeValue ?? [],
+          currentSession?.sessionType,
+          fastestDriver?.FastestTime
+        ),
+        isPlayer: result.CarIdx === session.playerIdx,
+        driver: {
+          name: driver.UserName,
+          carNum: driver.CarNumber,
+          license: driver.LicString,
+          rating: driver.IRating,
+          flairId: driver.FlairID,
+        },
+        fastestTime: result.FastestTime,
+        hasFastestTime: result.CarIdx === fastestDriverIdx,
+        lastTime: result.LastTime,
+        lastTimeState: getLastTimeState(
+          result.LastTime,
+          result.FastestTime,
+          result.CarIdx === fastestDriverIdx
+        ),
+        onPitRoad: telemetry?.carIdxOnPitRoadValue?.[result.CarIdx] ?? false,
+        onTrack:
+          (telemetry?.carIdxTrackSurfaceValue?.[result.CarIdx] ?? -1) > -1,
+        tireCompound: telemetry?.carIdxTireCompoundValue?.[result.CarIdx] ?? 0,
+        carClass: {
+          id: driver.CarClassID,
+          color: driver.CarClassColor,
+          name: driver.CarClassShortName,
+          relativeSpeed: driver.CarClassRelSpeed,
+          estLapTime: driver.CarClassEstLapTime,
+        },
+        radioActive: telemetry.radioTransmitCarIdx?.includes(result.CarIdx),
+        carId: driver.CarID,
+        lapTimeDeltas:
+          result.CarIdx === session.playerIdx
+            ? undefined // Don't show deltas for player (comparing to themselves)
+            : lapDeltasVsPlayer && lapDeltasVsPlayer[result.CarIdx] && lapDeltasVsPlayer[result.CarIdx].length > 0
+              ? lapDeltasVsPlayer[result.CarIdx].slice(0, numLapsToShow) // Use pre-calculated deltas
+              : undefined,
+        lastPitLap: lastPitLap[result.CarIdx] ?? undefined,
+        lastLap: lastLap[result.CarIdx] ?? undefined,
+        prevCarTrackSurface: prevCarTrackSurface[result.CarIdx] ?? undefined,
+        carTrackSurface: telemetry?.carIdxTrackSurfaceValue?.[result.CarIdx] ?? undefined,
+        currentSessionType: currentSession.sessionType,
+        dnf: !!((telemetry?.carIdxSessionFlags?.[result.CarIdx] ?? 0) & GlobalFlags.Disqualify),
+        repair: !!((telemetry?.carIdxSessionFlags?.[result.CarIdx] ?? 0) & GlobalFlags.Repair),
+        penalty: !!((telemetry?.carIdxSessionFlags?.[result.CarIdx] ?? 0) & GlobalFlags.Black),
+        slowdown: !!((telemetry?.carIdxSessionFlags?.[result.CarIdx] ?? 0) & GlobalFlags.Furled),
+      };
+    });
 };
 
 /**

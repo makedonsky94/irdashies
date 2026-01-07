@@ -7,13 +7,13 @@ import {
 import { useDriverStandings } from './useDriverStandings';
 
 export const useDriverRelatives = ({ buffer }: { buffer: number }) => {
-  const driversGrouped = useDriverStandings();
-  const drivers = driversGrouped.flatMap((group) => group[1]);
+  const driversStanding = useDriverStandings();
+  const drivers = driversStanding.standings.flatMap((group) => group[1]);
   const carIdxLapDistPct = useTelemetryValues('CarIdxLapDistPct');
   // CarIdxEstTime - iRacing's native estimated time gap calculation
   const carIdxEstTime = useTelemetryValues('CarIdxEstTime');
   // Use focus car index which handles spectator mode (uses CamCarIdx when spectating)
-  const playerIndex = useFocusCarIdx();
+  const playerIndex = driversStanding.driver?.CarIdx;
   const paceCarIdx =
     useSessionStore((s) => s.session?.DriverInfo?.PaceCarIdx) ?? -1;
 
@@ -129,7 +129,7 @@ export const useDriverRelatives = ({ buffer }: { buffer: number }) => {
       .filter((result) => !isNaN(result.relativePct) && !isNaN(result.delta));
 
     const playerArrIndex = sortedDrivers.findIndex(
-      (result) => result.carIdx === playerIndex,
+      (result) => result.isPlayer,
     );
 
     // if the player is not in the list, return an empty array
