@@ -17,7 +17,6 @@ import {
   usePrevCarTrackSurface,
 } from '@irdashies/context';
 import {
-  createDriverStandings,
   groupStandingsByClass,
   sliceRelevantDrivers,
   createDriverStandingsFromDrivers,
